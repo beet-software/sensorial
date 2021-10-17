@@ -22,7 +22,7 @@ class _SensorChannel {
       final args = {"interval": _transformDurationToNumber(interval)};
       final eventChannel = await _getEventChannel(sensorId, arguments: args);
       sensorStream = eventChannel.receiveBroadcastStream().map((event) {
-        return SensorEvent.fromMap(event);
+        return SensorEvent.fromMap((event as Map).cast<String, dynamic>());
       });
       _sensorStreams.putIfAbsent(sensorId, () => sensorStream);
     } else {
