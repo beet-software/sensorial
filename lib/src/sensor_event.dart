@@ -2,27 +2,25 @@ part of flutter_sensors;
 
 /// Class that represents an sensor update event.
 class SensorEvent {
-  /// Id of the sensor updating.
-  int sensorId;
+  /// ID of the sensor that generated this event.
+  final int sensorId;
+
+  /// Time in milliseconds at which the event happened.
+  final int timestamp;
 
   /// List of data.
-  List<double> data;
+  final List<double> data;
 
-  /// Accuracy of the reading.
-  int accuracy;
+  /// Accuracy of this event.
+  final int accuracy;
 
   /// Constructor.
-  SensorEvent(this.sensorId, this.data, this.accuracy);
+  const SensorEvent({this.sensorId, this.data, this.accuracy, this.timestamp});
 
   /// Construct an object from a map.
-  SensorEvent.fromMap(Map map) {
-    this.sensorId = map["sensorId"];
-    this.accuracy = map["accuracy"];
-    List<double> data = [];
-    List<dynamic> resultData = map["data"];
-    resultData.forEach((value) {
-      data.add(value);
-    });
-    this.data = data;
-  }
+  SensorEvent.fromMap(Map<String, dynamic> map)
+      : sensorId = map["sensorId"],
+        accuracy = map["accuracy"],
+        timestamp = map["timestamp"],
+        data = (map["data"] as List).cast<double>();
 }

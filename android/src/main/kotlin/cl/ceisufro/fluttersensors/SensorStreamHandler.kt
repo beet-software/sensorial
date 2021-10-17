@@ -5,6 +5,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import io.flutter.plugin.common.EventChannel
+import java.util.concurrent.TimeUnit
 import java.util.*
 
 
@@ -59,10 +60,8 @@ class SensorStreamHandler(private val sensorManager: SensorManager, sensorId: In
         val currentTime = Calendar.getInstance()
         if (event != null && isValidTime(currentTime)) {
             val data = arrayListOf<Float>()
-            event.values.forEach {
-                data.add(it)
-            }
-            notifyEvent(event.sensor.type, data, event.accuracy)
+            event.values.forEach(data.add)
+            notifyEvent(event.sensor.type, data, event.accuracy, TimeUnit.NANOSECONS.toMillis(event.timestamp))
             lastUpdate = currentTime
         }
     }
@@ -75,9 +74,10 @@ class SensorStreamHandler(private val sensorManager: SensorManager, sensorId: In
         return true
     }
 
-    private fun notifyEvent(sensorId: Int, data: ArrayList<Float>, accuracy: Int) {
+    private fun notifyEvent(sensorId: Int, data: ArrayList<Float>, accuracy: Int, timestamp: Long) {
         val resultMap = mutableMapOf<String, Any?>(
                 "sensorId" to sensorId,
+                "timestamp" to timestamp,
                 "data" to data,
                 "accuracy" to accuracy)
         eventSink?.success(resultMap)

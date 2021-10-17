@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+* Added timestamp to events
+
 ## 0.1.6
 
 * Fixed delay problem that avoided events to be reported (#3).
