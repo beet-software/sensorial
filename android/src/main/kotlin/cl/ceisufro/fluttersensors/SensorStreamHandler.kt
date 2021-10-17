@@ -60,8 +60,8 @@ class SensorStreamHandler(private val sensorManager: SensorManager, sensorId: In
         val currentTime = Calendar.getInstance()
         if (event != null && isValidTime(currentTime)) {
             val data = arrayListOf<Float>()
-            event.values.forEach(data.add)
-            notifyEvent(event.sensor.type, data, event.accuracy, TimeUnit.NANOSECONS.toMillis(event.timestamp))
+            event.values.forEach(data::add)
+            notifyEvent(event.sensor.type, data, event.accuracy, TimeUnit.NANOSECONDS.toMillis(event.timestamp))
             lastUpdate = currentTime
         }
     }
