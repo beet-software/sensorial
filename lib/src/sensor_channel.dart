@@ -14,21 +14,27 @@ class _SensorChannel {
   final Map<int, Stream<SensorEvent>> _sensorStreams = {};
 
   /// Register a sensor update request.
-  Future<Stream<SensorEvent>> sensorUpdates(
-      {int sensorId, Duration interval}) async {
-    Stream<SensorEvent> sensorStream = _getSensorStream(sensorId);
-    interval = interval ?? Sensors.SENSOR_DELAY_NORMAL;
+  Future<Stream<SensorEvent>> sensorUpdates({
+    required int sensorId,
+    Duration interval = Sensors.SENSOR_DELAY_NORMAL,
+  }) async {
+    final Stream<SensorEvent> stream;
+
+    Stream<SensorEvent>? sensorStream = _getSensorStream(sensorId);
     if (sensorStream == null) {
       final args = {"interval": _transformDurationToNumber(interval)};
       final eventChannel = await _getEventChannel(sensorId, arguments: args);
-      sensorStream = eventChannel.receiveBroadcastStream().map((event) {
+
+      stream = eventChannel.receiveBroadcastStream().map((event) {
         return SensorEvent.fromMap((event as Map).cast<String, dynamic>());
       });
-      _sensorStreams.putIfAbsent(sensorId, () => sensorStream);
+
+      _sensorStreams.putIfAbsent(sensorId, () => stream);
     } else {
       await updateSensorInterval(sensorId: sensorId, interval: interval);
+      stream = sensorStream;
     }
-    return sensorStream;
+    return stream;
   }
 
   /// Check if the sensor is available in the device.
@@ -41,7 +47,10 @@ class _SensorChannel {
   }
 
   /// Updates the interval between updates for an specific sensor.
-  Future updateSensorInterval({int sensorId, Duration interval}) async {
+  Future<void> updateSensorInterval({
+    required int sensorId,
+    required Duration interval,
+  }) async {
     return _methodChannel.invokeMethod(
       'update_sensor_interval',
       {"sensorId": sensorId, "interval": _transformDurationToNumber(interval)},
@@ -49,24 +58,26 @@ class _SensorChannel {
   }
 
   /// Return the stream associated with the given sensor.
-  Stream<SensorEvent> _getSensorStream(int sensorId) {
-    return _sensorStreams[sensorId];
-  }
+  Stream<SensorEvent>? _getSensorStream(int sensorId) =>
+      _sensorStreams[sensorId];
 
   /// Return the stream associated with the given sensor.
-  Future<EventChannel> _getEventChannel(int sensorId, {Map arguments}) async {
-    EventChannel eventChannel = _eventChannels[sensorId];
+  Future<EventChannel> _getEventChannel(int sensorId, {Map? arguments}) async {
+    final EventChannel channel;
+
+    EventChannel? eventChannel = _eventChannels[sensorId];
     if (eventChannel == null) {
-      arguments["sensorId"] = sensorId;
+      arguments?["sensorId"] = sensorId;
       await _methodChannel.invokeMethod("start_event_channel", arguments);
-      eventChannel = EventChannel("flutter_sensors/$sensorId");
-      _eventChannels.putIfAbsent(sensorId, () => eventChannel);
+      channel = EventChannel("flutter_sensors/$sensorId");
+      _eventChannels.putIfAbsent(sensorId, () => channel);
+    } else {
+      channel = eventChannel;
     }
-    return eventChannel;
+    return channel;
   }
 
   /// Transform the delay duration object to an int value for each platform.
-  num _transformDurationToNumber(Duration delay) {
-    return Platform.isAndroid ? delay.inMicroseconds : delay.inSeconds;
-  }
+  num _transformDurationToNumber(Duration delay) =>
+      Platform.isAndroid ? delay.inMicroseconds : delay.inSeconds;
 }

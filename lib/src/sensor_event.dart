@@ -15,7 +15,12 @@ class SensorEvent {
   final int accuracy;
 
   /// Constructor.
-  const SensorEvent({this.sensorId, this.data, this.accuracy, this.timestamp});
+  const SensorEvent({
+    required this.sensorId,
+    required this.data,
+    required this.accuracy,
+    required this.timestamp,
+  });
 
   /// Construct an object from a map.
   SensorEvent.fromMap(Map<String, dynamic> map)
