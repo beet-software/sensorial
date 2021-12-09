@@ -62,15 +62,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-  flutter_sensors:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: ab1fb3bfd2c165c409a21bd143c0131e8d40af3f
-      url: "https://github.com/enzo-santos/flutter_sensors.git"
-    source: git
-    version: "0.2.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter

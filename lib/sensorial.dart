@@ -1,6 +1,5 @@
 library sensorial;
 
-import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:sensorial/src/models/axis.dart';
 import 'package:sensorial/src/models/controllers.dart';
 import 'package:sensorial/src/models/data_transformation.dart';
@@ -8,11 +7,13 @@ import 'package:sensorial/src/models/metric.dart';
 import 'package:sensorial/src/models/metric_data.dart';
 import 'package:sensorial/src/models/sensor.dart';
 import 'package:sensorial/src/models/sensor_filter.dart';
+import 'package:sensorial/src/sensors/flutter_sensors.dart';
 
 class Sensorial {
   const Sensorial._();
 
-  Map<Metric<S>, TimeSeries> parse<S extends Sensor>(SyncSensorData<S, DateTime, double> data) {
+  Map<Metric<S>, TimeSeries> parse<S extends Sensor>(
+      SyncSensorData<S, DateTime, double> data) {
     final Set<Metric> metrics = {...data.get().list.expand((e) => e.keys)};
     return Map.fromIterable(metrics, value: (key) {
       final Metric<S> metric = key as Metric<S>;
@@ -39,13 +40,12 @@ class _InteractiveBuilder {
 
   Stream<Point3<DateTime, double>> _sourceStream({
     required int sensorId,
-  }) async* {
+  }) {
     final Point3<DateTime, double> Function(int)? source = _source;
     if (source == null) {
-      final Stream<SensorEvent> stream = await SensorManager()
-          .sensorUpdates(sensorId: sensorId, interval: _interval);
-
-      yield* stream.map((event) {
+      return SensorManager()
+          .sensorUpdates(sensorId: sensorId, interval: _interval)
+          .map((event) {
         final List<double> data = event.data;
         return Point3<DateTime, double>(
           DateTime.fromMillisecondsSinceEpoch(event.timestamp),
@@ -55,7 +55,7 @@ class _InteractiveBuilder {
         );
       });
     } else {
-      yield* Stream.periodic(_interval, source);
+      return Stream.periodic(_interval, source);
     }
   }
 

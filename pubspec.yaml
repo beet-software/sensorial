@@ -10,10 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_sensors:
-    git: https://github.com/enzo-santos/flutter_sensors.git
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+
+flutter:
+  plugin:
+    androidPackage: cl.ceisufro.fluttersensors
+    pluginClass: FlutterSensorsPlugin

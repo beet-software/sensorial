@@ -1,4 +1,4 @@
-import 'package:flutter_sensors/flutter_sensors.dart';
+import 'package:sensorial/src/sensors/flutter_sensors.dart';
 
 abstract class Sensor {
   static const Sensor accelerometer = Accelerometer._();
