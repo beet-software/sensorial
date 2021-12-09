@@ -25,9 +25,7 @@ class SensorManager {
   final _SensorChannel _sensorChannel = _SensorChannel();
 
   /// Opens a stream to receive sensor updates from the desired sensor
-  /// defined in the [request]. Returns the future of a stream because
-  /// the sensor event channels are dynamically created and must be
-  /// registered before returning the stream for each channel.
+  /// defined in the [request].
   Stream<SensorEvent> sensorUpdates({
     required int sensorId,
     required Duration interval,
