@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+* Add refactoring to sensorial
+
 ## 0.2.0
 
 * Added timestamp to events
