@@ -86,14 +86,14 @@ class _InteractiveBuilder {
 }
 
 class _SensorStreamBuilder<S extends Sensor> {
-  final Stream<Point3<DateTime, double>> stream;
+  final Stream<Point3<DateTime, double>> _stream;
 
   DataTransformation _operation = DataTransformation.none();
   final Set<Metric> _metrics = {};
   final Set<SensorStreamListener> _listeners = {};
   InteractiveController? _controller;
 
-  _SensorStreamBuilder._(this.stream);
+  _SensorStreamBuilder._(this._stream);
 
   _SensorStreamBuilder<S> operation(DataTransformation operation) {
     _operation = operation;
@@ -115,8 +115,8 @@ class _SensorStreamBuilder<S extends Sensor> {
     return this;
   }
 
-  AsyncSensorData<S, DateTime, double> get() {
-    return SensorData.async(stream
+  AsyncSensorData<S, DateTime, double> stream() {
+    return SensorData.async(_stream
         .map((point) => _operation.onData<DateTime>(point))
         .where((point) => point != null)
         .cast<Point3<DateTime, double>>()
