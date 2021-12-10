@@ -42,6 +42,10 @@ class AsyncSensorData<S extends Sensor, X, Y> extends SensorData<S, X, Y> {
       : super._(AsyncCollection(stream));
 
   @override
+  AsyncMetricData<X, Y> metric(Metric<S> metric) =>
+      super.metric(metric) as AsyncMetricData<X, Y>;
+
+  @override
   MetricData<X, Y> _onMetricData(Collection<Point3<X, Y>> collection) {
     return AsyncMetricData._(collection as AsyncCollection<Point3<X, Y>>);
   }
@@ -54,6 +58,10 @@ class AsyncSensorData<S extends Sensor, X, Y> extends SensorData<S, X, Y> {
 class SyncSensorData<S extends Sensor, X, Y> extends SensorData<S, X, Y> {
   SyncSensorData._(List<Map<Metric<S>, Point3<X, Y>>> list)
       : super._(SyncCollection(list));
+
+  @override
+  SyncMetricData<X, Y> metric(Metric<S> metric) =>
+      super.metric(metric) as SyncMetricData<X, Y>;
 
   @override
   MetricData<X, Y> _onMetricData(Collection<Point3<X, Y>> collection) {
