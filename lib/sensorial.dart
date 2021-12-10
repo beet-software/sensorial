@@ -9,6 +9,17 @@ import 'package:sensorial/src/models/sensor.dart';
 import 'package:sensorial/src/models/sensor_filter.dart';
 import 'package:sensorial/src/sensors/flutter_sensors.dart';
 
+export 'src/models/axis.dart';
+export 'src/models/controllers.dart';
+export 'src/models/data_transformation.dart';
+export 'src/models/metric.dart';
+export 'src/models/metric_data.dart';
+export 'src/models/sensor.dart';
+export 'src/models/sensor_filter.dart';
+export 'src/utils/collection.dart';
+export 'src/utils/sequential_getter.dart';
+export 'src/utils/streaming.dart';
+
 class Sensorial {
   const Sensorial._();
 
