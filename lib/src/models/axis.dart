@@ -1,14 +1,6 @@
 /// Represents three-dimensional axes.
 enum Axis3 { x, y, z }
 
-/// Represents a [value] in a particular [axis] direction in a 3D system.
-class AxisValue<T> {
-  final Axis3 axis;
-  final T value;
-
-  const AxisValue({required this.axis, required this.value});
-}
-
 /// Represents a point in a 2D system.
 ///
 /// In this system, [X] is the range and [Y] is the domain.
@@ -20,7 +12,9 @@ class Point2<X, Y> {
 }
 
 /// Represents data in a 3D system.
-abstract class Data3<T> extends Iterable<AxisValue<T>> {
+///
+/// In this system, the x-, y- and z-axis contains values of type [T].
+abstract class Data3<T> extends Iterable<Point2<Axis3, T>> {
   const Data3();
 
   /// Represents a value in the X-axis.
@@ -47,9 +41,8 @@ abstract class Data3<T> extends Iterable<AxisValue<T>> {
   /// Creates an iterator that goes over the values in each direction of this
   /// system, in the order X, Y and Z.
   @override
-  Iterator<AxisValue<T>> get iterator => Axis3.values
-      .map((axis) => AxisValue(axis: axis, value: this[axis]))
-      .iterator;
+  Iterator<Point2<Axis3, T>> get iterator =>
+      Axis3.values.map((axis) => Point2(x: axis, y: this[axis])).iterator;
 }
 
 /// Represents a point in a 3D system.
