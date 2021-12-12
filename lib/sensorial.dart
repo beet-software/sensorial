@@ -110,35 +110,34 @@ class _SensorStreamBuilder<S extends Sensor> {
     return this;
   }
 
-  _SensorStreamBuilder<S> listener(SensorStreamListener listener) {
-    _listeners.add(listener);
-    return this;
-  }
+  AsyncSensorData<S, DateTime, double> build() {
+    return SensorData.async(
+      _stream
+          .map((point) => _operation.onData<DateTime>(point))
+          .where((point) => point != null)
+          .cast<Point3<DateTime, double>>()
+          .where((point) {
+        final InteractiveController? controller = _controller;
+        if (controller == null) return true;
+        return controller.isRunning;
+      }).map((point) {
+        final Map<Metric<S>, Data3<double>> transforms = Map.fromIterable(
+          _metrics,
+          value: (metric) => (metric as Metric<S>).transform(point),
+        );
 
-  AsyncSensorData<S, DateTime, double> stream() {
-    return SensorData.async(_stream
-        .map((point) => _operation.onData<DateTime>(point))
-        .where((point) => point != null)
-        .cast<Point3<DateTime, double>>()
-        .map((point) {
-          final InteractiveController? controller = _controller;
-          if (controller == null) return point;
-          return controller.isRunning ? point : null;
-        })
-        .where((point) => point != null)
-        .cast<Point3<DateTime, double>>()
-        .map((point) {
-          return Map<Metric<S>, Point3<DateTime, double>>.fromIterable(
-            _metrics,
-            value: (metric) => (metric as Metric<S>).transform(point),
-          );
-        })
-        .map((point) {
-          for (SensorStreamListener listener in _listeners) {
-            listener(point);
-          }
-          return point;
-        }));
+        return SensorValue(
+          Point3(
+            point.key,
+            x: transforms.map((metric, data) => MapEntry(metric, data.x)),
+            y: transforms.map((metric, data) => MapEntry(metric, data.y)),
+            z: transforms.map((metric, data) => MapEntry(metric, data.z)),
+          ),
+          metrics: _metrics,
+        );
+      }),
+      metrics: _metrics,
+    );
   }
 }
 
