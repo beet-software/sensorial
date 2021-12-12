@@ -62,32 +62,44 @@ class Point3<X, Y> extends Data3<Y> {
 }
 
 /// Represents a group of points in a 3D system.
-class Series<X, Y> extends Data3<List<Point2<X, Y>>> {
+class Series3<X, Y> extends Data3<List<Point2<X, Y>>> {
   final List<Point3<X, Y>> _data;
 
-  const Series(this._data);
+  /// Creates a series from a list of 3D points.
+  const Series3(this._data);
 
+  /// Return the points from the x-axis of this series.
   @override
   List<Point2<X, Y>> get x =>
       _data.map((point) => Point2(x: point.key, y: point.x)).toList();
 
+  /// Return the points from the y-axis of this series.
   @override
   List<Point2<X, Y>> get y =>
       _data.map((point) => Point2(x: point.key, y: point.y)).toList();
 
+  /// Return the points from the z-axis of this series.
   @override
   List<Point2<X, Y>> get z =>
       _data.map((point) => Point2(x: point.key, y: point.z)).toList();
 }
 
-class DoubleSeries<X> extends Series<X, double> {
+/// Represents a group of doubles in a 3D system.
+class DoubleSeries<X> extends Series3<X, double> {
   const DoubleSeries(List<Point3<X, double>> data) : super(data);
 }
 
+/// Represents a group of time-to-doubles points in a 3D system.
+///
+/// Useful to represent a time series.
 class TimeSeries extends DoubleSeries<DateTime> {
   const TimeSeries(List<Point3<DateTime, double>> data) : super(data);
 }
 
+/// Represents a group of Hz-to-doubles points in a 3D system.
+///
+/// Useful to represent a frequency-domain series (such as the result of a
+/// Fourier Transform).
 class FrequencySeries extends DoubleSeries<double> {
   const FrequencySeries(List<Point3<double, double>> data) : super(data);
 }
