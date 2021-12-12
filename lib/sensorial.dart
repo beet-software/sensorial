@@ -24,13 +24,12 @@ class Sensorial {
   const Sensorial._();
 
   Map<Metric<S>, TimeSeries> parse<S extends Sensor>(
-      SyncSensorData<S, DateTime, double> data) {
-    final Set<Metric> metrics = {...data.get().list.expand((e) => e.keys)};
-    return Map.fromIterable(metrics, value: (key) {
+    SyncTransposedSensorData<S, DateTime, double> data,
+  ) {
+    return Map.fromIterable(data.metrics, value: (key) {
       final Metric<S> metric = key as Metric<S>;
-      final SyncMetricData<DateTime, double> metricData =
-          data.metric(metric) as SyncMetricData<DateTime, double>;
-      return TimeSeries(metricData.get().list);
+      final SyncMetricData<DateTime, double> metricData = data.metric(metric);
+      return TimeSeries(metricData.collect().list);
     });
   }
 
@@ -89,8 +88,7 @@ class _SensorStreamBuilder<S extends Sensor> {
   final Stream<Point3<DateTime, double>> _stream;
 
   DataTransformation _operation = DataTransformation.none();
-  final Set<Metric> _metrics = {};
-  final Set<SensorStreamListener> _listeners = {};
+  final Set<Metric<S>> _metrics = {};
   InteractiveController? _controller;
 
   _SensorStreamBuilder._(this._stream);
