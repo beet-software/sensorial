@@ -1,3 +1,9 @@
+/// Represents a [Collection] wrapper.
+abstract class Collector<E> {
+  /// Returns the collection wrapped by this object.
+  Collection<E> collect();
+}
+
 /// Represents a common interface between a stream and a list.
 abstract class Collection<E> {
   const Collection();
