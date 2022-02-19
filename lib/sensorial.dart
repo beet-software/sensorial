@@ -23,13 +23,13 @@ export 'src/utils/streaming.dart';
 class Sensorial {
   const Sensorial._();
 
-  Map<Metric<S>, TimeSeries> parse<S extends Sensor>(
-    SyncTransposedSensorData<S, DateTime, double> data,
+  Map<Metric<S>, TimeSeries> parseData<S extends Sensor>(
+    SyncTransposedSensorData<S, Duration, double> data,
   ) {
     return Map.fromIterable(data.metrics, value: (key) {
       final Metric<S> metric = key as Metric<S>;
-      final SyncMetricData<DateTime, double> metricData = data.metric(metric);
-      return TimeSeries(metricData.collect().list);
+      final SyncMetricData<Duration, double> metricData = data.metric(metric);
+      return TimeSeries(metricData.collect().value);
     });
   }
 
@@ -37,21 +37,21 @@ class Sensorial {
 }
 
 typedef SensorStreamListener = void Function(
-    Map<Metric, Point3<DateTime, double>>);
+    Map<Metric, Point3<Duration, double>>);
 
 typedef PointProvider<X, Y> = Point3<X, Y> Function(int);
 
 class _InteractiveBuilder {
   _InteractiveBuilder();
 
-  PointProvider<DateTime, double>? _source;
+  PointProvider<Duration, double>? _source;
 
   Duration _interval = const Duration(milliseconds: 30);
 
-  Stream<Point3<DateTime, double>> _sourceStream({
+  Stream<Point3<Duration, double>> _sourceStream({
     required int sensorId,
   }) {
-    final Point3<DateTime, double> Function(int)? source = _source;
+    final Point3<Duration, double> Function(int)? source = _source;
     if (source == null) {
       return SensorManager()
           .sensorUpdates(sensorId: sensorId, interval: _interval)
@@ -85,7 +85,7 @@ class _InteractiveBuilder {
 }
 
 class _SensorStreamBuilder<S extends Sensor> {
-  final Stream<Point3<DateTime, double>> _stream;
+  final Stream<Point3<Duration, double>> _stream;
 
   DataTransformation _operation = DataTransformation.none();
   final Set<Metric<S>> _metrics = {};
@@ -108,7 +108,7 @@ class _SensorStreamBuilder<S extends Sensor> {
     return this;
   }
 
-  AsyncSensorData<S, DateTime, double> build() {
+  AsyncSensorData<S, Duration, double> build() {
     return SensorData.async(
       _stream
           .map((point) => _operation.onData<DateTime>(point))

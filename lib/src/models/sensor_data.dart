@@ -19,16 +19,16 @@ part of 'metric_data.dart';
 /// an object of this class can be built programmatically by
 ///
 /// ```dart
-/// final SensorData<Accelerometer, DateTime, double> data = SensorData.sync(
+/// final SensorData<Accelerometer, Duration, double> data = SensorData.sync(
 ///   [
 ///     Point3(
-///       DateTime.parse("2021-12-10 22:06:10.200"),
+///       Duration.parse("2021-12-10 22:06:10.200"),
 ///       x: {Metric.acceleration: 0.13, Metric.accelerometerAngle: 0.00},
 ///       y: {Metric.acceleration: 0.20, Metric.accelerometerAngle: 0.00},
 ///       z: {Metric.acceleration: 9.81, Metric.accelerometerAngle: 89.75},
 ///     ),
 ///     Point3(
-///       DateTime.parse("2021-12-10 22:06:10.400"),
+///       Duration.parse("2021-12-10 22:06:10.400"),
 ///       x: {Metric.acceleration: 0.16, Metric.accelerometerAngle: 0.20},
 ///       y: {Metric.acceleration: 0.12, Metric.accelerometerAngle: 0.10},
 ///       z: {Metric.acceleration: 9.80, Metric.accelerometerAngle: 89.20},
@@ -268,42 +268,42 @@ class TransposedSensorValue<S extends Sensor, X, Y> {
 /// an object of this class can be built programmatically by
 ///
 /// ```dart
-/// final TransposedSensorData<Accelerometer, DateTime, double> data;
+/// final TransposedSensorData<Accelerometer, Duration, double> data;
 /// data = TransposedSensorData.sync(
-///   <TransposedSensorValue<Accelerometer, DateTime, double>>[
+///   <TransposedSensorValue<Accelerometer, Duration, double>>[
 ///     TransposedSensorValue(
 ///       {
 ///         Metric.acceleration: Point3(
-///           DateTime.parse("2021-12-10 22:06:10.200"),
+///           Duration.parse("2021-12-10 22:06:10.200"),
 ///           x: 0.13,
 ///           y: 0.20,
 ///           z: 9.81,
 ///         ),
 ///         Metric.accelerometerAngle: Point3(
-///           DateTime.parse("2021-12-10 22:06:10.200"),
+///           Duration.parse("2021-12-10 22:06:10.200"),
 ///           x: 0.00,
 ///           y: 0.00,
 ///           z: 89.75,
 ///         ),
 ///       },
-///       key: DateTime.parse("2021-12-10 22:06:10.200"),
+///       key: Duration.parse("2021-12-10 22:06:10.200"),
 ///     ),
 ///     TransposedSensorValue(
 ///       {
 ///         Metric.acceleration: Point3(
-///           DateTime.parse("2021-12-10 22:06:10.400"),
+///           Duration.parse("2021-12-10 22:06:10.400"),
 ///           x: 0.16,
 ///           y: 0.12,
 ///           z: 9.80,
 ///         ),
 ///         Metric.accelerometerAngle: Point3(
-///           DateTime.parse("2021-12-10 22:06:10.400"),
+///           Duration.parse("2021-12-10 22:06:10.400"),
 ///           x: 0.20,
 ///           y: 0.10,
 ///           z: 89.20,
 ///         ),
 ///       },
-///       key: DateTime.parse("2021-12-10 22:06:10.400"),
+///       key: Duration.parse("2021-12-10 22:06:10.400"),
 ///     ),
 ///     // ...
 ///   ],

@@ -92,8 +92,8 @@ class DoubleSeries<X> extends Series3<X, double> {
 /// Represents a group of time-to-doubles points in a 3D system.
 ///
 /// Useful to represent a time series.
-class TimeSeries extends DoubleSeries<DateTime> {
-  const TimeSeries(List<Point3<DateTime, double>> data) : super(data);
+class TimeSeries extends DoubleSeries<Duration> {
+  const TimeSeries(List<Point3<Duration, double>> data) : super(data);
 }
 
 /// Represents a group of Hz-to-doubles points in a 3D system.
