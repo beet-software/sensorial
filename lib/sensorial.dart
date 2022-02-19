@@ -4,9 +4,8 @@ import 'package:sensorial/src/models/axis.dart';
 import 'package:sensorial/src/models/controllers.dart';
 import 'package:sensorial/src/models/data_transformation.dart';
 import 'package:sensorial/src/models/metric.dart';
-import 'package:sensorial/src/models/metric_data.dart';
 import 'package:sensorial/src/models/sensor.dart';
-import 'package:sensorial/src/models/sensor_filter.dart';
+import 'package:sensorial/src/models/sensor_data.dart';
 import 'package:sensorial/src/sensors/flutter_sensors.dart';
 import 'package:sensorial/src/utils/sequential_getter.dart';
 import 'package:sensorial/src/utils/streaming.dart';
@@ -15,9 +14,8 @@ export 'src/models/axis.dart';
 export 'src/models/controllers.dart';
 export 'src/models/data_transformation.dart';
 export 'src/models/metric.dart';
-export 'src/models/metric_data.dart';
 export 'src/models/sensor.dart';
-export 'src/models/sensor_filter.dart';
+export 'src/models/sensor_data.dart';
 export 'src/utils/collection.dart';
 export 'src/utils/sequential_getter.dart';
 export 'src/utils/streaming.dart';
@@ -43,6 +41,26 @@ typedef SensorStreamListener = void Function(
 
 typedef PointProvider<X, Y> = Point3<X, Y> Function(int);
 
+class _SensorEventTransforming
+    extends TransformingFunction<SensorEvent, Point3<Duration, double>> {
+  final FirstValueGetter<Duration> _getter = SequentialGetter.first();
+
+  @override
+  Iterable<Point3<Duration, double>> onValue(SensorEvent event) sync* {
+    final Duration currentDuration = Duration(milliseconds: event.timestamp);
+    final Duration firstDuration = _getter.accept(currentDuration);
+    final Duration duration = currentDuration - firstDuration;
+
+    final List<double> data = event.data;
+    yield Point3<Duration, double>(
+      duration,
+      x: data[0],
+      y: data[1],
+      z: data[2],
+    );
+  }
+}
+
 class _InteractiveBuilder {
   _InteractiveBuilder();
 
@@ -57,15 +75,7 @@ class _InteractiveBuilder {
     if (source == null) {
       return SensorManager()
           .sensorUpdates(sensorId: sensorId, interval: _interval)
-          .map((event) {
-        final List<double> data = event.data;
-        return Point3<DateTime, double>(
-          DateTime.fromMillisecondsSinceEpoch(event.timestamp),
-          x: data[0],
-          y: data[1],
-          z: data[2],
-        );
-      });
+          .transform(_SensorEventTransforming());
     } else {
       return Stream.periodic(_interval, source);
     }
@@ -76,13 +86,13 @@ class _InteractiveBuilder {
     return this;
   }
 
-  _InteractiveBuilder source(PointProvider<DateTime, double> source) {
+  _InteractiveBuilder source(PointProvider<Duration, double> source) {
     _source = source;
     return this;
   }
 
-  _SensorStreamBuilder<S> sensor<S extends Sensor>(SensorFilter<S> filter) {
-    return _SensorStreamBuilder._(_sourceStream(sensorId: filter.sensor.id));
+  _SensorStreamBuilder<S> sensor<S extends Sensor>(S sensor) {
+    return _SensorStreamBuilder._(_sourceStream(sensorId: sensor.id));
   }
 }
 
@@ -91,7 +101,6 @@ class _SensorStreamBuilder<S extends Sensor> {
 
   DataTransformation _operation = DataTransformation.none();
   final Set<Metric<S>> _metrics = {};
-  InteractiveController? _controller;
 
   _SensorStreamBuilder._(this._stream);
 
@@ -102,11 +111,6 @@ class _SensorStreamBuilder<S extends Sensor> {
 
   _SensorStreamBuilder<S> metric(Metric<S> metric) {
     _metrics.add(metric);
-    return this;
-  }
-
-  _SensorStreamBuilder<S> controller(InteractiveController controller) {
-    _controller = controller;
     return this;
   }
 

@@ -1,9 +1,4 @@
-import 'package:sensorial/src/models/axis.dart';
-import 'package:sensorial/src/models/metric.dart';
-import 'package:sensorial/src/models/sensor.dart';
-import 'package:sensorial/src/utils/collection.dart';
-
-part 'sensor_data.dart';
+part of 'sensor_data.dart';
 
 abstract class MetricData<X, Y> extends Data3<Collection<Point2<X, Y>>>
     implements Collector<Point3<X, Y>> {
