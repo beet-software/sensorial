@@ -6,6 +6,8 @@ abstract class Collector<E> {
 
 /// Represents a common interface between a stream and a list.
 abstract class Collection<E> {
+  Object get value;
+
   const Collection();
 
   Collection<R> cast<R>();
@@ -29,79 +31,81 @@ abstract class Collection<E> {
 
 /// Represents a collection backed by a stream.
 class AsyncCollection<E> extends Collection<E> {
-  final Stream<E> stream;
+  @override
+  final Stream<E> value;
 
-  const AsyncCollection(this.stream);
+  const AsyncCollection(this.value);
 
   @override
-  Collection<R> cast<R>() => AsyncCollection(stream.cast<R>());
+  Collection<R> cast<R>() => AsyncCollection(value.cast<R>());
 
   @override
   Collection<R> expand<R>(Iterable<R> Function(E element) toElements) =>
-      AsyncCollection(stream.expand(toElements));
+      AsyncCollection(value.expand(toElements));
 
   @override
   Collection<R> map<R>(R Function(E e) toElement) =>
-      AsyncCollection(stream.map(toElement));
+      AsyncCollection(value.map(toElement));
 
   @override
-  Collection<E> skip(int count) => AsyncCollection(stream.skip(count));
+  Collection<E> skip(int count) => AsyncCollection(value.skip(count));
 
   @override
   Collection<E> skipWhile(bool Function(E value) test) =>
-      AsyncCollection(stream.skipWhile(test));
+      AsyncCollection(value.skipWhile(test));
 
   @override
-  Collection<E> take(int count) => AsyncCollection(stream.take(count));
+  Collection<E> take(int count) => AsyncCollection(value.take(count));
 
   @override
   Collection<E> takeWhile(bool Function(E value) test) =>
-      AsyncCollection(stream.takeWhile(test));
+      AsyncCollection(value.takeWhile(test));
 
   @override
   Collection<E> where(bool Function(E element) test) =>
-      AsyncCollection(stream.where(test));
+      AsyncCollection(value.where(test));
 
   @override
   Collection<R> whereType<R>() =>
-      AsyncCollection(stream.where((event) => event is R).cast<R>());
+      AsyncCollection(value.where((event) => event is R).cast<R>());
 }
 
 /// Represents a collection backed by a list.
 class SyncCollection<E> extends Collection<E> {
-  final List<E> list;
+  @override
+  final List<E> value;
 
-  const SyncCollection(this.list);
+  const SyncCollection(this.value);
 
   @override
-  Collection<R> cast<R>() => SyncCollection(list.cast<R>());
+  Collection<R> cast<R>() => SyncCollection(value.cast<R>());
 
   @override
   Collection<T> expand<T>(Iterable<T> Function(E element) toElements) =>
-      SyncCollection(list.expand(toElements).toList());
+      SyncCollection(value.expand(toElements).toList());
 
   @override
   Collection<T> map<T>(T Function(E e) toElement) =>
-      SyncCollection(list.map(toElement).toList());
+      SyncCollection(value.map(toElement).toList());
 
   @override
-  Collection<E> skip(int count) => SyncCollection(list.skip(count).toList());
+  Collection<E> skip(int count) => SyncCollection(value.skip(count).toList());
 
   @override
   Collection<E> skipWhile(bool Function(E value) test) =>
-      SyncCollection(list.skipWhile(test).toList());
+      SyncCollection(value.skipWhile(test).toList());
 
   @override
-  Collection<E> take(int count) => SyncCollection(list.take(count).toList());
+  Collection<E> take(int count) => SyncCollection(value.take(count).toList());
 
   @override
   Collection<E> takeWhile(bool Function(E value) test) =>
-      SyncCollection(list.takeWhile(test).toList());
+      SyncCollection(value.takeWhile(test).toList());
 
   @override
   Collection<E> where(bool Function(E element) test) =>
-      SyncCollection(list.where(test).toList());
+      SyncCollection(value.where(test).toList());
 
   @override
-  Collection<T> whereType<T>() => SyncCollection(list.whereType<T>().toList());
+  Collection<T> whereType<T>() => SyncCollection(value.whereType<T>().toList());
 }
