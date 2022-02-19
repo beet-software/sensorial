@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+
+* Library release
+
 ## 0.3.0
 
 * Add refactoring to sensorial

@@ -1,6 +1,7 @@
 name: sensorial
-description: Provides sensor manipulation utilities
-version: 0.3.0
+version: 1.0.0
+description: Provides sensor manipulation utilities.
+repository: https://github.com/beet-software/sensorial.git
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
