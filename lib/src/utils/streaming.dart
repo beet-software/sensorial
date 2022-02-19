@@ -20,6 +20,10 @@ import 'dart:async';
 /// }
 /// ```
 abstract class TransformingFunction<I, O> extends StreamTransformerBase<I, O> {
+  factory TransformingFunction.parameter(Iterable<O> Function(I) onValue) {
+    return _ParameterFunction(onValue);
+  }
+
   StreamSubscription<I>? _subscription;
   Stream<I>? _stream;
 
@@ -33,7 +37,8 @@ abstract class TransformingFunction<I, O> extends StreamTransformerBase<I, O> {
         _subscription = stream.listen(
           (data) => onValue(data).forEach(_controller.add),
           onError: _controller.addError,
-          onDone: _controller.close,
+          onDone: () async =>
+              await Future.wait([_controller.close(), dispose()]),
           cancelOnError: true,
         );
       },
@@ -51,6 +56,8 @@ abstract class TransformingFunction<I, O> extends StreamTransformerBase<I, O> {
   }
 
   Iterable<O> onValue(I value);
+
+  Future<void> dispose() async {}
 }
 
 /// Transforming operation that produces at least one value as the same type as the original value.
@@ -74,6 +81,12 @@ abstract class TransformingFunction<I, O> extends StreamTransformerBase<I, O> {
 /// }
 /// ```
 abstract class TransformingUnaryOperator<T> extends TransformingFunction<T, T> {
+  factory TransformingUnaryOperator.parameter(
+      Iterable<T> Function(T) onAction) {
+    return _ParameterUnaryOperator(onAction);
+  }
+
+  TransformingUnaryOperator();
 }
 
 /// Transforming operation that produces the original value unchanged, executing
@@ -101,6 +114,12 @@ abstract class TransformingUnaryOperator<T> extends TransformingFunction<T, T> {
 /// }
 /// ```
 abstract class TransformingConsumer<T> extends TransformingUnaryOperator<T> {
+  factory TransformingConsumer.parameter(void Function(T) onAction) {
+    return _ParameterConsumer(onAction);
+  }
+
+  TransformingConsumer();
+
   @override
   Iterable<T> onValue(T value) sync* {
     onAction(value);
@@ -108,4 +127,31 @@ abstract class TransformingConsumer<T> extends TransformingUnaryOperator<T> {
   }
 
   void onAction(T value);
+}
+
+class _ParameterFunction<I, O> extends TransformingFunction<I, O> {
+  final Iterable<O> Function(I) _onValue;
+
+  _ParameterFunction(this._onValue);
+
+  @override
+  Iterable<O> onValue(I value) => _onValue(value);
+}
+
+class _ParameterUnaryOperator<T> extends TransformingUnaryOperator<T> {
+  final Iterable<T> Function(T) _onValue;
+
+  _ParameterUnaryOperator(this._onValue);
+
+  @override
+  Iterable<T> onValue(T value) => _onValue(value);
+}
+
+class _ParameterConsumer<T> extends TransformingConsumer<T> {
+  final void Function(T) _onAction;
+
+  _ParameterConsumer(this._onAction);
+
+  @override
+  void onAction(T value) => _onAction(value);
 }

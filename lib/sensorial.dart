@@ -8,6 +8,8 @@ import 'package:sensorial/src/models/metric_data.dart';
 import 'package:sensorial/src/models/sensor.dart';
 import 'package:sensorial/src/models/sensor_filter.dart';
 import 'package:sensorial/src/sensors/flutter_sensors.dart';
+import 'package:sensorial/src/utils/sequential_getter.dart';
+import 'package:sensorial/src/utils/streaming.dart';
 
 export 'src/models/axis.dart';
 export 'src/models/controllers.dart';
@@ -109,16 +111,19 @@ class _SensorStreamBuilder<S extends Sensor> {
   }
 
   AsyncSensorData<S, Duration, double> build() {
+    Iterable<Point3<Duration, double>> _onTransform(
+      Point3<Duration, double> point,
+    ) sync* {
+      final Point3<Duration, double>? transformed =
+          _operation.onData<Duration>(point);
+      if (transformed == null) return;
+      yield transformed;
+    }
+
     return SensorData.async(
       _stream
-          .map((point) => _operation.onData<DateTime>(point))
-          .where((point) => point != null)
-          .cast<Point3<DateTime, double>>()
-          .where((point) {
-        final InteractiveController? controller = _controller;
-        if (controller == null) return true;
-        return controller.isRunning;
-      }).map((point) {
+          .transform(TransformingUnaryOperator.parameter(_onTransform))
+          .map((point) {
         final Map<Metric<S>, Data3<double>> transforms = Map.fromIterable(
           _metrics,
           value: (metric) => (metric as Metric<S>).transform(point),
