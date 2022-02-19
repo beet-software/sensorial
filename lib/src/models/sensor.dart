@@ -1,8 +1,8 @@
 import 'package:sensorial/src/sensors/flutter_sensors.dart';
 
 abstract class Sensor {
-  static const Sensor accelerometer = Accelerometer._();
-  static const Sensor gyroscope = Gyroscope._();
+  static const Accelerometer accelerometer = Accelerometer._();
+  static const Gyroscope gyroscope = Gyroscope._();
   static const List<Sensor> values = [accelerometer, gyroscope];
 
   final int id;
