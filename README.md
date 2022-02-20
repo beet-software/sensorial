@@ -104,8 +104,8 @@ accelerometer contains the following data:
 - y-axis acceleration: 5 m/s²
 - z-axis acceleration: 3 m/s²
 - x-axis accelerometer angle: 10°
-- x-axis accelerometer angle: 20°
-- x-axis accelerometer angle: 40°
+- y-axis accelerometer angle: 20°
+- z-axis accelerometer angle: 40°
 
 The following holds true:
 
